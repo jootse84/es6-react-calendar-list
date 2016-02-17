@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
-import '../styles/label-list.less'
+import ReactDOM from 'react-dom'
+// import '../styles/card.less'
 
 export default class Card extends Component {
 
@@ -21,7 +22,7 @@ export default class Card extends Component {
     }
 
     drawImage () {
-        var canvas = React.findDOMNode(this.refs.canvas),
+        var canvas = ReactDOM.findDOMNode(this.refs.canvas),
             ctx;
         if (canvas === null) {
             return;
@@ -67,7 +68,7 @@ export default class Card extends Component {
     render () {
         var preview = this.props.preview,
             content = '',
-            tString = getDateString(this.props.time),
+            tString = this.getDateString(this.props.time),
             idImage = "img-" + this.props.time;
 
         if (preview) {
@@ -75,6 +76,7 @@ export default class Card extends Component {
                 <img
                   id={idImage}
                   src={preview}
+                  style={{width: '200px'}}
                   onClick={this.handleClick}
                   className="img-responsive" />
             );

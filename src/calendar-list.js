@@ -1,20 +1,23 @@
 import React, { Component, PropTypes } from 'react'
 import Card from './card'
-import '../styles/calendar-list.less'
+// import '../styles/calendar-list.less'
 
 export default class CalendarList extends Component {
+
     constructor (props) {
         super(props)
         this.state = {
             page: 0
         };
-    },
+    }
+
     getSharingUrl (code) {
         var tmp;
         tmp = [window.share_event];
         tmp = tmp.concat(['share', 'event', code]);
         return tmp.join('/');
-    },
+    }
+
     selectText () {
         try {
             chrome.runtime.sendMessage({
@@ -25,11 +28,13 @@ export default class CalendarList extends Component {
         } catch (err) {
             console.log('Oops, unable to copy');
         }
-    },
+    }
+
     updateShareUrl (code) {
         var url = this.getSharingUrl(code);
         $('#share_link').text(url);
-    },
+    }
+
     updateShareStatus (st) {
         if (st) {
             $('#block-share-request').hide();
@@ -38,16 +43,19 @@ export default class CalendarList extends Component {
             $('#block-share-request').show();
             $('#block-share').hide();
         }
-    },
+    }
+
     handleStepBackward () {
         this.setState({page: 0});
-    },
+    }
+
     handleBackward () {
         var currPage = this.state.page || 0,
             prevPage = Math.max(0, currPage - 1);
 
         this.setState({page: prevPage});
-    },
+    }
+
     handleStepForward () {
         var totalPage = 0;
 
@@ -55,7 +63,8 @@ export default class CalendarList extends Component {
             totalPage = Math.ceil(this.props.data.length / this.props.cardPerPage) - 1;
         }
         this.setState({page: totalPage});
-    },
+    }
+
     handleForward () {
         var currPage = this.state.page || 0,
             totalPage = 0;
@@ -64,14 +73,16 @@ export default class CalendarList extends Component {
             totalPage = Math.ceil(this.props.data.length / this.props.cardPerPage) - 1;
         }
         this.setState({page: Math.min(currPage + 1, totalPage)});
-    },
+    }
+
     handleClick (props) {
         this.props.Timer.setTime(props.time);
         $('#playerModal').modal('show');
         $('#playerModal').data('event_id', props.event_id);
         this.updateShareUrl(props.sharing_code);
         this.updateShareStatus(props.is_shared);
-    },
+    }
+
     handleDelete (props) {
         $('#deleteFormModal').modal({
             show: true,
@@ -80,7 +91,8 @@ export default class CalendarList extends Component {
         $('#delete-event-name').text('Motion Detection');
         $('#delete-event-time').text(this.getDateString(props.time));
         $('#deleteFormModal').data('event_id', props.event_id);
-    },
+    }
+
     getDateString (t) {
         var obj = new Date(t),
             year = obj.getFullYear(),
@@ -96,8 +108,9 @@ export default class CalendarList extends Component {
             return num;
         }
         return [year, month, date].join('/') + ' ' + [hour, minute].join(':');
-    },
-    renderNoneRecords: function () {
+    }
+
+    renderNoneRecords () {
         var divStyle = {
                 'padding': '100px'
             };
@@ -107,8 +120,9 @@ export default class CalendarList extends Component {
                 <h2>There is no event recording in your search period.</h2>
             </div>
         );
-    },
-    render {
+    }
+
+    render () {
         var page = this.state.page || 0,
             totalPage = 0,
             divStyle,

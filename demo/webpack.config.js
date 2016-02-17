@@ -8,7 +8,7 @@ module.exports = {
   ],
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'demo-react-label-list.js',
+    filename: 'demo-react-calendar-list.js',
     publicPath: '/static/'
   },
   plugins: [

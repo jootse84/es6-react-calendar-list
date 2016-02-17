@@ -1,7 +1,7 @@
 {
-  "name": "es6-react-label-list",
-  "version": "1.3.0",
-  "description": "React label list component",
+  "name": "es6-react-calendar-list",
+  "version": "1.0.0",
+  "description": "React calendar list component",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --require ignore-styles test/**/*.spec.js",
     "build": "babel ./src --out-dir ./lib",
@@ -9,16 +9,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jootse84/es6-react-label-list"
+    "url": "https://github.com/jootse84/es6-react-calendar-list"
   },
   "keywords": [
     "react",
     "reactjs",
     "list",
-    "tags",
-    "tag",
-    "label",
-    "labels",
+    "calendar",
+    "card",
+    "cards",
+    "time",
     "es6",
     "component"
   ],
