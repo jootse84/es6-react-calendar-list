@@ -33,7 +33,7 @@ const printMyList = (list) => {
 }
 render(
     <CalendarList
-      data={data.concat(data, data, data, data, data)}
+      data={data.concat(data, data, data, data, data, data, data, data)}
       listUpdated={printMyList} />,
     document.getElementById('root')
 )

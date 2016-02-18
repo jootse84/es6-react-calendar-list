@@ -10,6 +10,10 @@ export default class CalendarList extends Component {
         this.state = {
             page: 0
         };
+        this.handleStepForward = this.handleStepForward.bind(this)
+        this.handleStepBackward = this.handleStepBackward.bind(this)
+        this.handleForward = this.handleForward.bind(this)
+        this.handleBackward = this.handleBackward.bind(this)
     }
 
     getSharingUrl (code) {
@@ -58,10 +62,11 @@ export default class CalendarList extends Component {
     }
 
     handleStepForward () {
-        var totalPage = 0;
+        var totalPage = 0
+        const { data, cardPerPage } = this.props;
 
         if (this.props.data) {
-            totalPage = Math.ceil(this.props.data.length / this.props.cardPerPage) - 1;
+            totalPage = Math.ceil(data.length / (cardPerPage || 12)) - 1;
         }
         this.setState({page: totalPage});
     }
@@ -69,9 +74,10 @@ export default class CalendarList extends Component {
     handleForward () {
         var currPage = this.state.page || 0,
             totalPage = 0;
+        const { data, cardPerPage } = this.props;
 
         if (this.props.data) {
-            totalPage = Math.ceil(this.props.data.length / this.props.cardPerPage) - 1;
+            totalPage = Math.ceil(data.length / (cardPerPage || 12)) - 1;
         }
         this.setState({page: Math.min(currPage + 1, totalPage)});
     }
@@ -146,7 +152,7 @@ export default class CalendarList extends Component {
                 <div className="container">
                 <div className="row">
                     <div className="col-xs-12">
-                    {data.sort(function (a, b) {
+                    {data.sort((a, b) => {
                         return b.start_time - a.start_time;
                     }).slice(page * 8, (page + 1) * 8).map((data, i) => {
                         var time = data.start_time * 1000,
@@ -178,23 +184,23 @@ export default class CalendarList extends Component {
                         <span
                           className='pagination-icon'
                           onClick={this.handleStepBackward}>
-                            &lt;
+                            &lt;&lt;
                         </span>
                         <span
                           className='pagination-icon'
                           onClick={this.handleBackward}>
-                            &lt;&lt;
+                            &lt;
                         </span>
                         <span>Page : {page + 1} / {totalPage}</span>
                         <span
                           className='pagination-icon'
                           onClick={this.handleForward}>
-                            &gt;&gt;
+                            &gt;
                         </span>
                         <span
                           className='pagination-icon'
                           onClick={this.handleStepForward}>
-                            &gt;
+                            &gt;&gt;
                         </span>
                     </div>
                 </div>
