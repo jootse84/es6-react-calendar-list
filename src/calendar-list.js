@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import Card from './card'
 // import '../styles/calendar-list.less'
+// import '../node_modules/bootstrap/less/bootstrap.less'
 
 export default class CalendarList extends Component {
 
@@ -126,12 +127,12 @@ export default class CalendarList extends Component {
         var page = this.state.page || 0,
             totalPage = 0,
             divStyle,
-            handleClick = this.handleClick,
-            handleDelete = this.handleDelete,
             tmp;
 
         if (this.props.data) {
-            totalPage = Math.ceil(this.props.data.length / this.props.cardPerPage);
+            const { data, cardPerPage } = this.props
+
+            totalPage = Math.ceil(data.length / (cardPerPage || 12));
 
             if (this.props.data.length <= 0) {
                 return this.renderNoneRecords();
@@ -142,11 +143,12 @@ export default class CalendarList extends Component {
             }
 
             return (
+                <div className="container">
                 <div className="row">
                     <div className="col-xs-12">
-                    {this.props.data.sort(function (a, b) {
+                    {data.sort(function (a, b) {
                         return b.start_time - a.start_time;
-                    }).slice(page * 8, (page + 1) * 8).map(function (data, i) {
+                    }).slice(page * 8, (page + 1) * 8).map((data, i) => {
                         var time = data.start_time * 1000,
                             videoUrl = data.url,
                             sharing_code = data.sharing_code,
@@ -160,36 +162,47 @@ export default class CalendarList extends Component {
                         return (
                             <Card
                               key={i}
-                              time={time}
                               video={videoUrl}
                               sharing_code={sharing_code}
                               event_id={event_id}
                               preview={preview}
+                              title={'Your title here'}
+                              description={this.getDateString(time)}
                               is_shared={is_shared}
-                              onClick={handleClick}
-                              onDelete={handleDelete} />
+                              onClick={this.handleClick}
+                              onDelete={this.handleDelete} />
                         );
                     })}
                     </div>
                     <div className="row text-center" id="pagination">
-                        <span className="glyphicon glyphicon-step-backward"
+                        <span
+                          className='pagination-icon'
                           onClick={this.handleStepBackward}>
+                            &lt;
                         </span>
-                        <span className="glyphicon glyphicon-backward"
+                        <span
+                          className='pagination-icon'
                           onClick={this.handleBackward}>
+                            &lt;&lt;
                         </span>
                         <span>Page : {page + 1} / {totalPage}</span>
-                        <span className="glyphicon glyphicon-forward"
+                        <span
+                          className='pagination-icon'
                           onClick={this.handleForward}>
+                            &gt;&gt;
                         </span>
-                        <span className="glyphicon glyphicon-step-forward"
+                        <span
+                          className='pagination-icon'
                           onClick={this.handleStepForward}>
+                            &gt;
                         </span>
                     </div>
+                </div>
                 </div>
             );
         } else {
           return (
+              <div className="container">
               <div className="row">
                   <div id="img-loading-wrapper">
                   <div id="img-loading-listener">
@@ -198,6 +211,7 @@ export default class CalendarList extends Component {
                     style={{'margin-top': '-150px !important'}} />
                   </div>
                   </div>
+              </div>
               </div>
           );
         }

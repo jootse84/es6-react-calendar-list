@@ -30,6 +30,7 @@
   "main": "lib",
   "license": "MIT",
   "dependencies": {
+    "bootstrap": "^3.3.6",
     "react": "^0.14.0",
     "react-dom": "^0.14.0"
   },

@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react'
 import CalendarList from '../../lib/calendar-list.js'
-
+import '../../styles/card.less'
+import '../../styles/calendar-list.less'
+import '../../node_modules/bootstrap/less/bootstrap.less'
 import { render } from 'react-dom'
 
 const data = [{
@@ -31,7 +33,7 @@ const printMyList = (list) => {
 }
 render(
     <CalendarList
-      data={data}
+      data={data.concat(data, data, data, data, data)}
       listUpdated={printMyList} />,
     document.getElementById('root')
 )

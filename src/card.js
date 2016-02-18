@@ -4,23 +4,6 @@ import ReactDOM from 'react-dom'
 
 export default class Card extends Component {
 
-    getDateString (t) {
-        var obj = new Date(t),
-            year = obj.getFullYear(),
-            month = padZero(obj.getMonth() + 1),
-            date = padZero(obj.getDate()),
-            hour = padZero(obj.getHours()),
-            minute = padZero(obj.getMinutes());
-
-        function padZero(num) {
-            if (num < 10) {
-                return '0' + num;
-            }
-            return num;
-        }
-        return [year, month, date].join('/') + ' ' + [hour, minute].join(':');
-    }
-
     drawImage () {
         var canvas = ReactDOM.findDOMNode(this.refs.canvas),
             ctx;
@@ -68,7 +51,6 @@ export default class Card extends Component {
     render () {
         var preview = this.props.preview,
             content = '',
-            tString = this.getDateString(this.props.time),
             idImage = "img-" + this.props.time;
 
         if (preview) {
@@ -76,7 +58,6 @@ export default class Card extends Component {
                 <img
                   id={idImage}
                   src={preview}
-                  style={{width: '200px'}}
                   onClick={this.handleClick}
                   className="img-responsive" />
             );
@@ -96,10 +77,12 @@ export default class Card extends Component {
                                 onClick={this.handleClick}>
                                 {content}
                             </div>
-                            <div><b>Motion Detection</b></div>
-                            <div>{tString}</div>
+                            <div><b>{this.props.title}</b></div>
+                            <div>
+                                {this.props.description}
+                            </div>
                             <div
-                                className="btn-event-delete"
+                                className="btn-delete"
                                 onClick={this.handleDelete}></div>
                         </div>
                     </div>
