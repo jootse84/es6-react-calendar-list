@@ -8,37 +8,81 @@ import { render } from 'react-dom'
 let now = new Date(),
     year = now.getFullYear(),
     month = now.getMonth(),
-    date = now.getDate()
+    date = now.getDate(),
+    data = [{
+        id: "000e64c79307434382ba711c25616564",
+        screenshot: "images/travel3.jpg",
+        start_time: (new Date(year, month, date).valueOf() / 1000) + 1
+    }, {
+        id: "0020224bcde94a718f5ee94e06838f1b",
+        screenshot: "images/travel2.jpg",
+        start_time: 1454585764
+    }, {
+        id: "002279616b43406396a20469f21e58cd",
+        screenshot: "images/travel4.png",
+        start_time: 1454646394
+    }]
 
-const data = [{
-    event_id: "000e64c79307434382ba711c25616564",
-    event_type: 1,
-    is_sharing: false,
-    screenshot: "images/travel3.jpg",
-    sharing_code: "Sc2u/htORMeJpJ9FDTz8AVyR1GGevwnpLS7Zzq4ZTJM",
-    start_time: (new Date(year, month, date).valueOf() / 1000) + 1
-}, {
-    event_id: "0020224bcde94a718f5ee94e06838f1b",
-    event_type: 1,
-    is_sharing: false,
-    screenshot: "images/travel2.jpg",
-    sharing_code: "4kPoQbHDlW2m1gUV1pISazpBpwCEtSIHxVfxJ1pvq/I",
-    start_time: 1454585764
-}, {
-    event_id: "002279616b43406396a20469f21e58cd",
-    event_type: 1,
-    is_sharing: false,
-    screenshot: "images/travel4.png",
-    sharing_code: "PwTZdRsJUL6O5lKVtQX538t7Bfj/YpOvlQ3wdKPo1BY",
-    start_time: 1454646394
-}]
+data = data.concat(data, data, data, data, data, data, data, data);
 
 const printMyList = (list) => {
     console.log(list.join(', '))
 }
+
+const onCardDeleted = function (props, callback) {
+    console.log('deleting card ' + props.card_id);
+    callback();
+}
+
+const onCardClicked = function (card) {
+    console.log('card clicked ' + card.card_id);
+}
+
+const getTitle = function (card) {
+    return 'Your title here';
+}
+
+const getDescription = function (card) {
+    var t = card.start_time * 1000,
+        obj = new Date(t),
+        year = obj.getFullYear(),
+        month = padZero(obj.getMonth() + 1),
+        date = padZero(obj.getDate()),
+        hour = padZero(obj.getHours()),
+        minute = padZero(obj.getMinutes());
+
+    function padZero(num) {
+        if (num < 10) {
+            return '0' + num;
+        }
+        return num;
+    }
+    return [year, month, date].join('/') + ' ' + [hour, minute].join(':');
+}
+
+const renderNoCards = function () {
+    return (
+        <div
+          className="text-center"
+          style={{'padding': '100px'}}>
+            <h2>
+                There is no card in your search period.
+            </h2>
+        </div>
+    );
+}
+
 render(
     <CalendarList
-      data={data.concat(data, data, data, data, data, data, data, data)}
+      idName="id"
+      startName="start_time"
+      imageName="screenshot"
+      data={data}
+      getTitle={getTitle}
+      getDescription={getDescription}
+      onCardDeleted={onCardDeleted}
+      onCardClicked={onCardClicked}
+      renderNoCards={renderNoCards}
       listUpdated={printMyList} />,
     document.getElementById('root')
 )

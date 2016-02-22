@@ -41,11 +41,11 @@ export default class Card extends Component {
     }
 
     handleClick () {
-        this.props.onClick(this.props);
+        this.props.onCardClicked(this.props);
     }
 
     handleDelete () {
-        this.props.onDelete(this.props);
+        this.props.onCardDeleted(this.props);
     }
 
     render () {
@@ -58,7 +58,6 @@ export default class Card extends Component {
                 <img
                   id={idImage}
                   src={preview}
-                  onClick={this.handleClick}
                   className="img-responsive" />
             );
         } else {
@@ -73,17 +72,21 @@ export default class Card extends Component {
                     <div
                         className="event-wrapper">
                         <div>
-                            <div className="canvas"
-                                onClick={this.handleClick}>
+                            <div
+                              className="canvas"
+                              onClick={this.handleClick.bind(this)}>
                                 {content}
                             </div>
-                            <div><b>{this.props.title}</b></div>
-                            <div>
+                            <div onClick={this.handleClick.bind(this)}>
+                                <b>{this.props.title}</b>
+                            </div>
+                            <div onClick={this.handleClick.bind(this)}>
                                 {this.props.description}
                             </div>
                             <div
-                                className="btn-delete"
-                                onClick={this.handleDelete}></div>
+                              className="btn-delete"
+                              onClick={this.handleDelete.bind(this)}>
+                            </div>
                         </div>
                     </div>
                 </div>

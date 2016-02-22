@@ -20,9 +20,10 @@ export default class CalendarList extends Component {
 
     componentDidMount () {
         const { start_time, end_time } = this.state,
-              min_time = this.props.data.reduce(function (prev, curr) {
-                  return Math.min(prev, curr.start_time * 1000);
-              }, Date.now());
+              { startName } = this.props,
+              min_time = this.props.data.reduce((prev, curr) => {
+                  return Math.min(prev, curr[startName] * 1000);
+              }, Date.now())
 
         $('#start-date').daterangepicker({
             locale: {
@@ -38,7 +39,7 @@ export default class CalendarList extends Component {
 
         this.setState({
             list: this.props.data.filter((d) => {
-                var t = d.start_time * 1000;
+                var t = d[startName] * 1000;
                 return t >= start_time && end_time >= t;
             })
         })
@@ -51,7 +52,7 @@ export default class CalendarList extends Component {
                 start_time: start_time,
                 end_time: end_time,
                 list: this.props.data.filter(function (d) {
-                    var t = d.start_time * 1000;
+                    var t = d[startName] * 1000;
                     return t >= start_time && end_time >= t;
                 })
             })
@@ -59,21 +60,12 @@ export default class CalendarList extends Component {
         })
     }
 
-    componentDidUpdate () {
-        /*const { start_time, end_time } = this.state
-        this.setState({
-            list: this.props.data.filter(function (d) {
-                var t = d.start_time * 1000;
-                return t >= start_time && end_time >= t;
-            })
-        })*/
-    }
-
-    updateHandler (event_id, updates) {
+    updateHandler (id, updates) {
+        const { idName } = this.props
         return this.setState({
-            list: this.state.list.map(function (d) {
+            list: this.state.list.map((d) => {
                 let k
-                if (d.event_id == event_id) {
+                if (d[idName] == id) {
                     for (k in updates) {
                         d[k] = updates[k]
                     }
@@ -85,10 +77,11 @@ export default class CalendarList extends Component {
     }
 
     deleteHandler (props) {
-        this.props.onDeleteCard(props, () => {
+        const { idName } = this.props
+        this.props.onCardDeleted(props, () => {
             this.setState({
                 list: this.state.list.filter(function (d) {
-                    return d.event_id != props.event_id
+                    return d[idName] != props[idName]
                 })
             })
             return
@@ -112,9 +105,15 @@ export default class CalendarList extends Component {
                 <div id="content-list">
                     <List
                         data={this.state.list}
-                        onDeleteCard={this.deleteHandler}
-                        cardsPerPage={this.props.cardsPerPage}
-                        Timer={this.props.Timer} />
+                        idName={this.props.idName}
+                        imageName={this.props.imageName}
+                        startName={this.props.startName}
+                        getTitle={this.props.getTitle}
+                        getDescription={this.props.getDescription}
+                        renderNoCards={this.props.renderNoCards}
+                        onCardDeleted={this.deleteHandler}
+                        onCardClicked={this.props.onCardClicked}
+                        cardsPerPage={this.props.cardsPerPage} />
                 </div>
             </div>
         );
