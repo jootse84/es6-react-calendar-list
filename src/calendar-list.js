@@ -1,225 +1,124 @@
 import React, { Component, PropTypes } from 'react'
-import Card from './card'
-// import '../styles/calendar-list.less'
-// import '../node_modules/bootstrap/less/bootstrap.less'
+import ReactDOM from 'react-dom'
+import List from './list'
 
 export default class CalendarList extends Component {
 
     constructor (props) {
+        let now = new Date(),
+            year = now.getFullYear(),
+            month = now.getMonth(),
+            date = now.getDate()
+
         super(props)
         this.state = {
-            page: 0
-        };
-        this.handleStepForward = this.handleStepForward.bind(this)
-        this.handleStepBackward = this.handleStepBackward.bind(this)
-        this.handleForward = this.handleForward.bind(this)
-        this.handleBackward = this.handleBackward.bind(this)
-    }
-
-    getSharingUrl (code) {
-        var tmp;
-        tmp = [window.share_event];
-        tmp = tmp.concat(['share', 'event', code]);
-        return tmp.join('/');
-    }
-
-    selectText () {
-        try {
-            chrome.runtime.sendMessage({
-                type: 'copy',
-                text: $('#share_link').text()
-            });
-            console.log('Copy was ' + successful ? 'successful' : 'unsuccessful');
-        } catch (err) {
-            console.log('Oops, unable to copy');
+            start_time: (new Date(year, month, date)).valueOf(),
+            end_time: (new Date(year, month, date + 1)).valueOf() - 1,
+            list: []
         }
     }
 
-    updateShareUrl (code) {
-        var url = this.getSharingUrl(code);
-        $('#share_link').text(url);
+    componentDidMount () {
+        const { start_time, end_time } = this.state,
+              min_time = this.props.data.reduce(function (prev, curr) {
+                  return Math.min(prev, curr.start_time * 1000);
+              }, Date.now());
+
+        $('#start-date').daterangepicker({
+            locale: {
+                format: 'MMM DD, YYYY HH:mm'
+            },
+            timePicker24Hour: true,
+            autoApply: true,
+            startDate: new Date(start_time),
+            endDate: new Date(end_time),
+            maxDate: new Date(end_time),
+            minDate: new Date(min_time)
+        })
+
+        this.setState({
+            list: this.props.data.filter((d) => {
+                var t = d.start_time * 1000;
+                return t >= start_time && end_time >= t;
+            })
+        })
+
+        $('#start-date').on('apply.daterangepicker', () => {
+            let range = $('#start-date').val().split(/\s*\-\s*/)
+            const start_time = (new Date(range[0])).valueOf();
+            const end_time = (new Date(range[1])).valueOf() + 59 * 1000 + 999
+            this.setState({
+                start_time: start_time,
+                end_time: end_time,
+                list: this.props.data.filter(function (d) {
+                    var t = d.start_time * 1000;
+                    return t >= start_time && end_time >= t;
+                })
+            })
+            return
+        })
     }
 
-    updateShareStatus (st) {
-        if (st) {
-            $('#block-share-request').hide();
-            $('#block-share').show();
-        } else {
-            $('#block-share-request').show();
-            $('#block-share').hide();
-        }
+    componentDidUpdate () {
+        /*const { start_time, end_time } = this.state
+        this.setState({
+            list: this.props.data.filter(function (d) {
+                var t = d.start_time * 1000;
+                return t >= start_time && end_time >= t;
+            })
+        })*/
     }
 
-    handleStepBackward () {
-        this.setState({page: 0});
+    updateHandler (event_id, updates) {
+        return this.setState({
+            list: this.state.list.map(function (d) {
+                let k
+                if (d.event_id == event_id) {
+                    for (k in updates) {
+                        d[k] = updates[k]
+                    }
+                    console.log(d)
+                }
+                return d
+            })
+        })
     }
 
-    handleBackward () {
-        var currPage = this.state.page || 0,
-            prevPage = Math.max(0, currPage - 1);
-
-        this.setState({page: prevPage});
+    deleteHandler (props) {
+        this.props.onDeleteCard(props, () => {
+            this.setState({
+                list: this.state.list.filter(function (d) {
+                    return d.event_id != props.event_id
+                })
+            })
+            return
+        })
     }
 
-    handleStepForward () {
-        var totalPage = 0
-        const { data, cardPerPage } = this.props;
-
-        if (this.props.data) {
-            totalPage = Math.ceil(data.length / (cardPerPage || 12)) - 1;
-        }
-        this.setState({page: totalPage});
-    }
-
-    handleForward () {
-        var currPage = this.state.page || 0,
-            totalPage = 0;
-        const { data, cardPerPage } = this.props;
-
-        if (this.props.data) {
-            totalPage = Math.ceil(data.length / (cardPerPage || 12)) - 1;
-        }
-        this.setState({page: Math.min(currPage + 1, totalPage)});
-    }
-
-    handleClick (props) {
-        this.props.Timer.setTime(props.time);
-        $('#playerModal').modal('show');
-        $('#playerModal').data('event_id', props.event_id);
-        this.updateShareUrl(props.sharing_code);
-        this.updateShareStatus(props.is_shared);
-    }
-
-    handleDelete (props) {
-        $('#deleteFormModal').modal({
-            show: true,
-            backdrop: 'static'
-        });
-        $('#delete-event-name').text('Motion Detection');
-        $('#delete-event-time').text(this.getDateString(props.time));
-        $('#deleteFormModal').data('event_id', props.event_id);
-    }
-
-    getDateString (t) {
-        var obj = new Date(t),
-            year = obj.getFullYear(),
-            month = padZero(obj.getMonth() + 1),
-            date = padZero(obj.getDate()),
-            hour = padZero(obj.getHours()),
-            minute = padZero(obj.getMinutes());
-
-        function padZero(num) {
-            if (num < 10) {
-                return '0' + num;
-            }
-            return num;
-        }
-        return [year, month, date].join('/') + ' ' + [hour, minute].join(':');
-    }
-
-    renderNoneRecords () {
-        var divStyle = {
-                'padding': '100px'
-            };
-
+    render () {
         return (
-            <div className="text-center" style={divStyle}>
-                <h2>There is no event recording in your search period.</h2>
+            <div>
+                <div className="row">
+                    <div className="col-md-6">
+                    </div>
+                    <div className="form-group has-feedback col-md-6">
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="start-date" />
+                        <span className="glyphicon glyphicon-calendar form-control-feedback" />
+                    </div>
+                </div>
+                <div id="content-list">
+                    <List
+                        data={this.state.list}
+                        onDeleteCard={this.deleteHandler}
+                        cardsPerPage={this.props.cardsPerPage}
+                        Timer={this.props.Timer} />
+                </div>
             </div>
         );
     }
 
-    render () {
-        var page = this.state.page || 0,
-            totalPage = 0,
-            divStyle,
-            tmp;
-
-        if (this.props.data) {
-            const { data, cardPerPage } = this.props
-
-            totalPage = Math.ceil(data.length / (cardPerPage || 12));
-
-            if (this.props.data.length <= 0) {
-                return this.renderNoneRecords();
-            }
-
-            if (totalPage <= page) {
-                page = totalPage - 1;
-            }
-
-            return (
-                <div className="container">
-                <div className="row">
-                    <div className="col-xs-12">
-                    {data.sort((a, b) => {
-                        return b.start_time - a.start_time;
-                    }).slice(page * 8, (page + 1) * 8).map((data, i) => {
-                        var time = data.start_time * 1000,
-                            videoUrl = data.url,
-                            sharing_code = data.sharing_code,
-                            preview = data.screenshot,
-                            is_shared = data.is_sharing,
-                            event_id = data.event_id;
-
-                        if (sharing_code) {
-                            sharing_code = sharing_code.replace(/\+/g, '-').replace(/\//g, '_');
-                        }
-                        return (
-                            <Card
-                              key={i}
-                              video={videoUrl}
-                              sharing_code={sharing_code}
-                              event_id={event_id}
-                              preview={preview}
-                              title={'Your title here'}
-                              description={this.getDateString(time)}
-                              is_shared={is_shared}
-                              onClick={this.handleClick}
-                              onDelete={this.handleDelete} />
-                        );
-                    })}
-                    </div>
-                    <div className="row text-center" id="pagination">
-                        <span
-                          className='pagination-icon'
-                          onClick={this.handleStepBackward}>
-                            &lt;&lt;
-                        </span>
-                        <span
-                          className='pagination-icon'
-                          onClick={this.handleBackward}>
-                            &lt;
-                        </span>
-                        <span>Page : {page + 1} / {totalPage}</span>
-                        <span
-                          className='pagination-icon'
-                          onClick={this.handleForward}>
-                            &gt;
-                        </span>
-                        <span
-                          className='pagination-icon'
-                          onClick={this.handleStepForward}>
-                            &gt;&gt;
-                        </span>
-                    </div>
-                </div>
-                </div>
-            );
-        } else {
-          return (
-              <div className="container">
-              <div className="row">
-                  <div id="img-loading-wrapper">
-                  <div id="img-loading-listener">
-                  <img
-                    src="images/ajax-loader-large.gif"
-                    style={{'margin-top': '-150px !important'}} />
-                  </div>
-                  </div>
-              </div>
-              </div>
-          );
-        }
-    }
 }
+

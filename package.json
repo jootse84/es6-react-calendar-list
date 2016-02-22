@@ -31,6 +31,9 @@
   "license": "MIT",
   "dependencies": {
     "bootstrap": "^3.3.6",
+    "bootstrap-daterangepicker": "^2.1.17",
+    "jquery": "^2.2.0",
+    "moment": "^2.11.2",
     "react": "^0.14.0",
     "react-dom": "^0.14.0"
   },

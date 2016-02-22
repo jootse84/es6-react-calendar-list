@@ -5,13 +5,18 @@ import '../../styles/calendar-list.less'
 import '../../node_modules/bootstrap/less/bootstrap.less'
 import { render } from 'react-dom'
 
+let now = new Date(),
+    year = now.getFullYear(),
+    month = now.getMonth(),
+    date = now.getDate()
+
 const data = [{
     event_id: "000e64c79307434382ba711c25616564",
     event_type: 1,
     is_sharing: false,
-    screenshot: "images/travel1.jpg",
+    screenshot: "images/travel3.jpg",
     sharing_code: "Sc2u/htORMeJpJ9FDTz8AVyR1GGevwnpLS7Zzq4ZTJM",
-    start_time: 1454599291
+    start_time: (new Date(year, month, date).valueOf() / 1000) + 1
 }, {
     event_id: "0020224bcde94a718f5ee94e06838f1b",
     event_type: 1,
@@ -23,7 +28,7 @@ const data = [{
     event_id: "002279616b43406396a20469f21e58cd",
     event_type: 1,
     is_sharing: false,
-    screenshot: "images/travel3.jpg",
+    screenshot: "images/travel4.png",
     sharing_code: "PwTZdRsJUL6O5lKVtQX538t7Bfj/YpOvlQ3wdKPo1BY",
     start_time: 1454646394
 }]
